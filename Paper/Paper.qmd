@@ -24,7 +24,7 @@ The aim of this research is to analyze and compare the music feature preferences
 Based on results in @sec-data and @sec-analysis, this analysis finds most of the distributions overlap heavily, suggesting homogeneity in terms of musical tastes for these attributes across these four regions.
 
 # Data {#sec-data}
-The data for this analysis is collected using the @spotify_api, and R code from @RCoreTeam2023 is used to load, clean and analyse our data, also R packages @R-dplyr, @R-ggplot2, @ggplot22016, @R-knitr, @knitr2015, @knitr2014, @R-patchwork, @R-spotifyr are used. 
+The data for this analysis is collected using the @spotify_api, and R code from [@RCoreTeam2023] is used to load, clean and analyse our data, also R packages dplyr[@R-dplyr], ggplot2[@R-ggplot2], [@ggplot22016], knitr[@R-knitr], [@knitr2015], [@knitr2014], patchwork[@R-patchwork], tidyverse[@tidyverse], spotifyr[@R-spotifyr] are used to download, simulate, visualize data and generate plots. 
 
 The countries included in this study are the UK, US, Australia, and Canada. The collected features for analysis include:
 - **Danceability**

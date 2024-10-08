@@ -7,7 +7,7 @@ code-fold: true
 execute:
   echo: false
 number-sections: true
-bibliography: Paper/references.bib
+bibliography: references.bib
 ---
 ```{r, message=FALSE}
 library(spotifyr)
@@ -151,10 +151,7 @@ combined_table <- combined_table[, c(names(combined_table)[1:(ncol(combined_tabl
 From @tbl-anova, we can see there is no significant variation in four features across the countries. The F values are all near 0, and the p-values are 1, indicating no difference between the countries for these features. Hence, we observe that none of the musical features show statistically significant differences between the countries. This suggests that the variation in these musical features is not attributable to the country of origin.
 
 # Discussion
-This analysis only have small sample, which can reduce the power of ANOVA to detect significant differences. This may have contributed to the lack of significant findings. Also, only four musical attributes were analyzed. Future analysis could be expanded to include more features such as tempo, or genre, which might reveal trends not captured by the current attributes.
-
-# Conclusion
-The results in @sec-data and @sec-analysis suggest no significant differences in musical preferences (in terms of Danceability, Energy, Valence, and Speechiness) between Australia, Canada, Great Britain, and the United States. However, this finding should be interpreted cautiously due to possible limitations in the dataset. To be specific, this analysis only have small sample, which can reduce the power of ANOVA to detect significant differences. This may have contributed to the lack of significant findings. Also, only four musical attributes were analyzed. Future analysis could be expanded to include more features such as tempo, or genre, which might reveal trends not captured by the current attributes.
+The results in @sec-data and @sec-analysis suggest no significant differences in musical preferences (in terms of Danceability, Energy, Valence, and Speechiness) between Australia, Canada, Great Britain, and the United States. However, this finding should be interpreted cautiously due to possible limitations in the dataset. To be specific, this analysis only have small sample, which can reduce the power of ANOVA to detect significant differences, so small sample may have contributed to the lack of significant findings. Also, only four musical attributes were analyzed. Future analysis could be expanded to include more features such as tempo, or genre, which might reveal trends not captured by the current attributes.
 
 \newpage
 # References

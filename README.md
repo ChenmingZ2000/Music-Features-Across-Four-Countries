@@ -7,7 +7,6 @@ This analysis compare the music feature preferences of four countries: the Unite
 The repo is structured as:
 
 -   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
--   `scripts` contains the R scripts used to simulate data.
 
 
 ## Statement on LLM usage

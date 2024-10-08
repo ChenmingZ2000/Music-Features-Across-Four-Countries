@@ -1,0 +1,160 @@
+---
+title: "Comparing Music Features Across the US, Canada, UK, and Australia"
+author: "Chenming Zhao, Yao Xingjie"
+format: pdf
+toc: true
+code-fold: true
+execute:
+  echo: false
+number-sections: true
+bibliography: Paper/references.bib
+---
+```{r, message=FALSE}
+library(spotifyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(patchwork)
+```
+
+# Introduction
+
+The aim of this research is to analyze and compare the music feature preferences of four countries: the United Kingdom, the United States, Australia, and Canada. We focus on determining if there are significant differences in music preferences across these countries. The analysis is based on data extracted from @spotify_api, with features such as danceability, energy, and others.
+
+Based on results in @sec-data and @sec-analysis, this analysis finds most of the distributions overlap heavily, suggesting homogeneity in terms of musical tastes for these attributes across these four regions.
+
+# Data {#sec-data}
+The data for this analysis is collected using the @spotify_api, and R code from @RCoreTeam2023 is used to load, clean and analyse our data, also R packages @R-dplyr, @R-ggplot2, @ggplot22016, @R-knitr, @knitr2015, @knitr2014, @R-patchwork, @R-spotifyr are used. 
+
+The countries included in this study are the UK, US, Australia, and Canada. The collected features for analysis include:
+- **Danceability**
+- **Energy**
+- **Valence**
+- **Speechiness**
+
+```{r}
+# Define a function to get the popular lists of different countries
+get_country_top_tracks <- function(country_playlist_id, country_name) {
+  tracks <- get_playlist_tracks(country_playlist_id)
+  tracks <- tracks %>%
+    mutate(country = country_name, added_at = as.Date(added_at))
+  return(tracks)
+}
+```
+
+```{r}
+countries <- c("GB", "US", "AU", "CA")
+
+music_data <- data.frame()
+
+for (country in countries) {
+  top_tracks <- get_playlist_tracks("37i9dQZEVXbLRQDuF5jeBp", market = country)
+  # get track_id and audio_features
+  track_ids <- top_tracks$track.id
+  audio_features <- get_track_audio_features(track_ids)
+  audio_features$country <- country
+  music_data <- bind_rows(music_data, audio_features)
+}
+```
+
+```{r, message=FALSE}
+music_data <- music_data %>%
+  select(country, danceability, energy, valence, speechiness)
+
+kable(head(music_data, 6), 
+      col.names = c("country", "danceability", "energy", "valence", "speechiness"), 
+      align = c("l", "c", "c", "c", "c"))
+```
+From @fig-features we can see Danceability, Energy, and Valence have similar medians and distribution across the four countries, indicating that the general characteristics of music in these regions do not differ significantly.
+Speechiness, however, shows more variability, with several outliers, especially in Australia and the US. This could reflect specific features or types of music in these countries that contain more spoken words.
+```{r}
+#| label: fig-features
+#| tbl-cap: Distribution of music features accross the four countries
+# visualise using ggplot
+Danceability_across_Countries <- ggplot(music_data, aes(x = country, y = danceability, fill = country)) +
+  geom_boxplot() +
+  labs(title = "Danceability across Countries", x = "Country", y = "Danceability") +
+  theme_minimal() + ggtitle("Danceability across Countries")
+
+Energy_across_Countries <- ggplot(music_data, aes(x = country, y = energy, fill = country)) +
+  geom_boxplot() +
+  labs(title = "Energy across Countries", x = "Country", y = "Energy") +
+  theme_minimal() + ggtitle("Energy across Countries")
+
+Valence_across_Countries <- ggplot(music_data, aes(x = country, y = valence, fill = country)) +
+  geom_boxplot() +
+  labs(title = "Valence across Countries", x = "Country", y = "Valence") +
+  theme_minimal() + ggtitle("Valence across Countries")
+
+Speechiness_across_Countries <- ggplot(music_data, aes(x = country, y = speechiness, fill = country)) +
+  geom_boxplot() +
+  labs(title = "Speechiness across Countries", x = "Country", y = "Speechiness") +
+  theme_minimal() + ggtitle("Speechiness across Countries")
+
+combined_plot <- (Danceability_across_Countries | Energy_across_Countries) / (Valence_across_Countries | Speechiness_across_Countries) 
+
+combined_plot
+```
+
+# Analysis {#sec-analysis}
+Based on @tbl-anova, the ANOVA results correspond to different musical features across four countries.
+
+## Introduction of ANOVA
+ANOVA (Analysis of Variance) is a statistical method used to compare the means of two or more groups.  It examines whether observed differences between groups are statistically significant by comparing group variance (between-group variability) to within-group variance (within-group variability).  If the between-group variance is significantly larger than the within-group variance, it suggests that at least one group mean differs.
+
+## ANOVA Table Structure
+Each ANOVA table presents the following information for one of the musical features (Danceability, Energy, Valence, Speechiness):
+
+- **Df (Degrees of Freedom)**: This represents the number of independent values or quantities which can be assigned to a statistical distribution. For the `country` factor, the degrees of freedom are 3 (since there are four countries: AU, CA, GB, and US, so \(n - 1 = 4 - 1 = 3\)). The degrees of freedom for `Residuals` are 196, which is the total number of observations minus the number of groups (e.g., \(200 - 4 = 196\)).
+
+- **Sum Sq (Sum of Squares)**: This represents the total variation explained by the `country` factor and the residual variation. The "Sum Sq" under `country` measures how much variation in the feature (Danceability, Energy, etc.) can be attributed to differences between countries, while "Sum Sq" under `Residuals` reflects the remaining unexplained variation.
+
+- **Mean Sq (Mean Square)**: This is the average of the squared differences, calculated by dividing the "Sum of Squares" by the corresponding degrees of freedom. It shows how much variation exists within the groups (in this case, between countries) and within the residuals.
+
+- **F Value**: The F-statistic is the ratio of the variance between groups (countries) to the variance within groups (residuals). A higher F value indicates that the group means are different from each other. If the F value is close to 0, it suggests no significant difference between groups.
+
+- **Pr(>F)**: This is the p-value, which indicates the probability that the observed differences between group means occurred by chance. If the p-value is less than a certain threshold (commonly 0.05), it suggests that the group differences are statistically significant.
+```{r}
+#| label: tbl-anova
+#| tbl-cap: ANOVA analysis of music features across four countries
+
+anova_danceability <- aov(danceability ~ country, data = music_data)
+summary_danceability <- summary(anova_danceability)
+danceability_table <- as.data.frame(summary_danceability[[1]])
+kable(danceability_table, format = "latex")
+
+
+anova_energy <- aov(energy ~ country, data = music_data)
+summary_energy <- summary(anova_energy)
+energy_table <- as.data.frame(summary_energy[[1]])
+kable(energy_table, format = "latex")
+
+anova_valence <- aov(valence ~ country, data = music_data)
+summary_valence <- summary(anova_valence)
+valence_table <- as.data.frame(summary_valence[[1]])
+kable(valence_table, format = "latex")
+
+anova_speechiness <- aov(speechiness ~ country, data = music_data)
+summary_speechiness <- summary(anova_speechiness)
+speechiness_table <- as.data.frame(summary_speechiness[[1]])
+kable(speechiness_table, format = "latex")
+
+# Combine all ANOVA tables
+combined_table <- rbind(anova_danceability, anova_energy, anova_valence, anova_speechiness)
+
+# Reorder columns so 'Variable' is first
+combined_table <- combined_table[, c(names(combined_table)[1:(ncol(combined_table)-1)])]
+
+```
+## Interpretation of the Results
+
+From @tbl-anova, we can see there is no significant variation in four features across the countries. The F values are all near 0, and the p-values are 1, indicating no difference between the countries for these features. Hence, we observe that none of the musical features show statistically significant differences between the countries. This suggests that the variation in these musical features is not attributable to the country of origin.
+
+# Discussion
+This analysis only have small sample, which can reduce the power of ANOVA to detect significant differences. This may have contributed to the lack of significant findings. Also, only four musical attributes were analyzed. Future analysis could be expanded to include more features such as tempo, or genre, which might reveal trends not captured by the current attributes.
+
+# Conclusion
+The results in @sec-data and @sec-analysis suggest no significant differences in musical preferences (in terms of Danceability, Energy, Valence, and Speechiness) between Australia, Canada, Great Britain, and the United States. However, this finding should be interpreted cautiously due to possible limitations in the dataset. To be specific, this analysis only have small sample, which can reduce the power of ANOVA to detect significant differences. This may have contributed to the lack of significant findings. Also, only four musical attributes were analyzed. Future analysis could be expanded to include more features such as tempo, or genre, which might reveal trends not captured by the current attributes.
+
+\newpage
+# References

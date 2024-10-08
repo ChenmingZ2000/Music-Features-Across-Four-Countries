@@ -1,0 +1,16 @@
+LLM: ChatGPT-4o.
+Date: 07 October 2024
+
+
+User
+How to merge four gglopts in one figure?
+ChatGPT
+
+Use combined_plot,
+combined_plot <- (Plot1 | Plot2) / (Plot3 | Plot4) 
+
+User
+hi chat can you suggest me code to put four tables made by kable() together
+
+ChatGPT
+Gave a line of code does not work for user: combined_table <- cbind(kable1, kable2, kable3, kable4)

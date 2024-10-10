@@ -6,7 +6,10 @@ This analysis compare the music feature preferences of four countries: the Unite
 
 The repo is structured as:
 
+-   `data/music_data` contains the downloaded and cleaned data ready for analysis as obtained from Spotify uing API.
 -   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
+-   `scripts` contains the R scripts used to simulate, download and clean data.
+
 
 
 ## Statement on LLM usage

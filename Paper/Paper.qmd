@@ -1,6 +1,6 @@
 ---
 title: "Comparing Music Features Across the US, Canada, UK, and Australia"
-author: "Chenming Zhao, Yao Xingjie"
+author: "Chenming Zhao, Yao Xingjie, Mingxuan Liu, Irene Liu"
 format: pdf
 toc: true
 code-fold: true

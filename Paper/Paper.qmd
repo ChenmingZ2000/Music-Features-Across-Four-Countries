@@ -15,6 +15,7 @@ library(dplyr)
 library(ggplot2)
 library(knitr)
 library(patchwork)
+library(tidyverse)
 
 music_data <- read_csv(here::here("data/music_data.csv"))
 ```

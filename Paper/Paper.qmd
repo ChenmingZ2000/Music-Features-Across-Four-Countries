@@ -15,6 +15,8 @@ library(dplyr)
 library(ggplot2)
 library(knitr)
 library(patchwork)
+
+music_data <- read_csv(here::here("data/music_data.csv"))
 ```
 
 # Introduction
@@ -26,41 +28,13 @@ Based on results in @sec-data and @sec-analysis, this analysis finds most of the
 # Data {#sec-data}
 The data for this analysis is collected using the @spotify_api, and R code from [@RCoreTeam2023] is used to load, clean and analyse our data, also R packages dplyr[@R-dplyr], ggplot2[@R-ggplot2], [@ggplot22016], knitr[@R-knitr], [@knitr2015], [@knitr2014], patchwork[@R-patchwork], tidyverse[@tidyverse], spotifyr[@R-spotifyr] are used to download, simulate, visualize data and generate plots. 
 
-The countries included in this study are the UK, US, Australia, and Canada. The collected features for analysis include:
+The countries included in this study are the UK(GB), US, Australia, and Canada. The collected features for analysis include:
 - **Danceability**
 - **Energy**
 - **Valence**
 - **Speechiness**
 
-```{r}
-# Define a function to get the popular lists of different countries
-get_country_top_tracks <- function(country_playlist_id, country_name) {
-  tracks <- get_playlist_tracks(country_playlist_id)
-  tracks <- tracks %>%
-    mutate(country = country_name, added_at = as.Date(added_at))
-  return(tracks)
-}
-```
-
-```{r}
-countries <- c("GB", "US", "AU", "CA")
-
-music_data <- data.frame()
-
-for (country in countries) {
-  top_tracks <- get_playlist_tracks("37i9dQZEVXbLRQDuF5jeBp", market = country)
-  # get track_id and audio_features
-  track_ids <- top_tracks$track.id
-  audio_features <- get_track_audio_features(track_ids)
-  audio_features$country <- country
-  music_data <- bind_rows(music_data, audio_features)
-}
-```
-
 ```{r, message=FALSE}
-music_data <- music_data %>%
-  select(country, danceability, energy, valence, speechiness)
-
 kable(head(music_data, 6), 
       col.names = c("country", "danceability", "energy", "valence", "speechiness"), 
       align = c("l", "c", "c", "c", "c"))
